@@ -1,3 +1,4 @@
+require "csv"
 require "yaml"
 require "active_record"
 
@@ -76,6 +77,15 @@ def pretty(results)
   nil
 end
 
+def write_csv(results, filename)
+  CSV.open("./#{filename}", "wb") do |csv|
+    csv << ["count", "week", "workflow_state"]
+    results.each do |(monday, state), count|
+      csv << [count, monday, state]
+    end
+  end
+end
+
 def timed(&blk)
   s = Time.now
   blk.call
@@ -86,18 +96,44 @@ end
 @s = "2014-07-14".to_date
 @e = "2014-07-21".to_date
 
-if ARGV[0] != nil
-  start_date = ARGV[0].to_date
-  end_date = ARGV[1].to_date
+if ARGV[0] == nil
+  puts <<-HELP
+
+Please call this ruby file like so:
+ruby compute.rb "2014-7-01" "2015-07-01"
+
+This will create an output csv named: output_2014-07-01_to_2015-07-01.csv
+
+  HELP
+else
+  begin
+    start_date = ARGV[0].to_date
+  rescue
+    puts "#{ARGV[0]} is not a valid date, please use YYYY-MM-DD format"
+    return
+  end
+
+  begin
+    end_date = ARGV[1].to_date
+  rescue
+    puts "#{ARGV[1]} is not a valid date, please use YYYY-MM-DD format"
+    return
+  end
+
+  filename = "output_#{start_date}_to_#{end_date}.csv"
+  results = nil
   puts "Fetching data between #{start_date} and #{end_date}"
 
   puts "\nvia SQL"
-  timed { analyze_sql(start_date, end_date) }
+  timed { results = analyze_sql(start_date, end_date) }
 
-  puts "\nvia ORM"
-  timed { analyze_orm(start_date, end_date) }
+  puts "\nwriting to #{filename}..."
+  timed { write_csv(results, filename) }
 
-  puts "\nvia ORM plucked"
-  timed { analyze_orm_plucked(start_date, end_date) }
+  # puts "\nvia ORM"
+  # timed { analyze_orm(start_date, end_date) }
+
+  # puts "\nvia ORM plucked"
+  # timed { analyze_orm_plucked(start_date, end_date) }
 end
 
