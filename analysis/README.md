@@ -1,5 +1,32 @@
-Query will look something like:
+# Analysis Script
+This contains blah blah blah
 
+How to run:
+```
+```
+
+# Notes
+Ok, so doing the group by in SQL is way more performant than using the ORM:
+```
+~/Desktop/instacart/analysis master * >  ruby compute.rb "2014-07-01" "2015-09-21"
+Fetching data between 2014-07-01 and 2015-09-21
+
+via SQL
+Took 1.849611 seconds
+
+via ORM
+Took 45.251969 seconds
+
+via ORM plucked
+Took 28.646828 seconds
+```
+I've confirmed that my ORM based results are correct with the output on
+HackerRank, but for some reason, my SQL based results are bad.  Need to
+work on fixing that.
+
+UPDATE: ok fixed the problem
+
+Query will look something like:
 ```
 SELECT
   COUNT(*),
