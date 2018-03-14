@@ -2,11 +2,12 @@
 This contains blah blah blah
 
 How to run:
+move a copy of `applicants.sqlite3` to the current direction, then run
 ```
 ruby compute.rb "2014-7-01" "2015-07-01"
 ```
-will create an output file `output_2014-07-01_to_2015-07-01.csv` in the current
-directory
+which will create an output file `output_2014-07-01_to_2015-07-01.csv` in the
+current directory
 
 - I'm able to run the script over the entire 500,000 rows in 1-2 seconds, so I
   ended up sorting the array by week and state
@@ -15,11 +16,9 @@ directory
   it's way slower than doing the group by in sqlite
 - I assumed that I was supposed to continue using sqlite instead of migrating
   the data to a faster database
-- I added an index to the applicants.sqlite3 file that's included in this repo.
-  This dramatically improves performance.  However, if you want to use your own
-  database file, you are free to.  The script will idempotently add the index
-  to whatever database file it hooks into (by default the `applicants.sqlite3`
-  file in the `analysis` folder)
+- I added an index that dramatically improves performance.  The script will
+  idempotently add the index to whatever database file it hooks into (by
+  default the `applicants.sqlite3` file in the `analysis` folder)
 
 # Notes
 This are just notes I was taking for myself while doing the project, nothing
