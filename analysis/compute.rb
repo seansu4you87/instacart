@@ -15,6 +15,36 @@ class Applicant < ActiveRecord::Base
   }
 end
 
+INDEX_NAME = "applicants_created_at_workflow_state"
+
+def idempotent_sql(&blk)
+  begin
+    blk.call
+  rescue Exception => e
+    puts "SQL already executed, caught and moving on...exception: #{e}"
+  end
+end
+
+def create_index
+  puts "Creating index #{INDEX_NAME}..."
+  Applicant.connection.execute(
+<<-SQL
+CREATE INDEX #{INDEX_NAME}
+ON applicants(created_at, workflow_state)
+;
+SQL
+  )
+end
+
+def drop_index
+  puts "Dropping index #{INDEX_NAME}..."
+  Applicant.connection.execute(
+<<-SQL
+DROP INDEX #{INDEX_NAME};
+SQL
+  )
+end
+
 def analyze_sql(start_date, end_date)
 
   raw = Applicant.connection.execute(
@@ -93,8 +123,16 @@ def timed(&blk)
   puts "Took #{e - s} seconds"
 end
 
+
+
+
+
+# SCRIPTING STARTS
 @s = "2014-07-14".to_date
 @e = "2014-07-21".to_date
+
+# timed { idempotent_sql { drop_index } }
+timed { idempotent_sql { create_index } }
 
 if ARGV[0] == nil
   puts <<-HELP

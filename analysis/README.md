@@ -15,6 +15,11 @@ directory
   it's way slower than doing the group by in sqlite
 - I assumed that I was supposed to continue using sqlite instead of migrating
   the data to a faster database
+- I added an index to the applicants.sqlite3 file that's included in this repo.
+  This dramatically improves performance.  However, if you want to use your own
+  database file, you are free to.  The script will idempotently add the index
+  to whatever database file it hooks into (by default the `applicants.sqlite3`
+  file in the `analysis` folder)
 
 # Notes
 This are just notes I was taking for myself while doing the project, nothing
